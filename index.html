@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولّد تقرير أعطال الشبكة - ذكي وسريع</title>
+    <!-- خط تجوال من جوجل -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* الألوان الرئيسية والتصميم الزجاجي */
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --secondary: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: rgba(51, 65, 85, 0.8);
+            --effective: #ef4444;
+            /* أحمر */
+            --ineffective: #22c55e;
+            /* أخضر */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            /* خلفية متدرجة تعطي إيحاء بالفخامة */
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15), transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.15), transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--surface-color);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            animation: fadeUp 0.6s ease-out;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 800px) {
+            .grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.875rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            -webkit-appearance: none;
+            /* لمنع تنسيقات الآيفون الافتراضية المزعجة */
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.5;
+        }
+
+        input {
+            height: 48px;
+        }
+
+        textarea:focus,
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            width: 100%;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px -6px var(--primary-glow);
+            -webkit-appearance: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px -6px var(--primary-glow);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+        }
+
+        /* الإحصائيات */
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            display: none;
+            /* مخفي مبدئياً */
+            animation: fadeUp 0.5s ease;
+        }
+
+        .stat-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        .stat-card.red::before {
+            background: var(--effective);
+        }
+
+        .stat-card.green::before {
+            background: var(--ineffective);
+        }
+
+        .stat-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-top: 0.5rem;
+        }
+
+        .stat-value.red {
+            color: var(--effective);
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-value.green {
+            color: var(--ineffective);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.3);
+        }
+
+        /* منطقة التقرير النهائي */
+        .output-wrapper {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .output-wrapper textarea {
+            flex-grow: 1;
+            font-family: inherit;
+            background: #0b1120;
+            border-color: #1e293b;
+            color: #e2e8f0;
+            cursor: text;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--ineffective);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.5);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1000;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        /* زينة الأيقونات باستخدام دوائر ملونة للمؤثرات البصرية */
+        .dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .dot.red {
+            background: var(--effective);
+            box-shadow: 0 0 8px var(--effective);
+        }
+
+        .dot.green {
+            background: var(--ineffective);
+            box-shadow: 0 0 8px var(--ineffective);
+        }
+
+        .dot.blue {
+            background: var(--primary);
+            box-shadow: 0 0 8px var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>تقرير الانقطاعات الذكي ⚡</h1>
+        <p class="subtitle">قم بلصق كل بلاغات الواتس آب الخاصة بالانقطاعات وسنقوم بالباقي</p>
+
+        <div class="grid">
+            <!-- اللوحة اليمنى: المدخلات -->
+            <div class="panel">
+                <div class="row">
+                    <div class="input-group">
+                        <label><span class="dot blue"></span>أقصى حمل (MW)</label>
+                        <input type="number" id="mwInput" placeholder="مثال: 1200" required>
+                    </div>
+                    <div class="input-group">
+                        <label><span class="dot blue"></span>تاريخ التقرير</label>
+                        <input type="date" id="dateInput">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            style="margin-left: 8px;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        الصق جميع البلاغات هنا:
+                    </label>
+                    <textarea id="reportInput"
+                        placeholder="الصق جميع نصوص البلاغات هنا...&#10;&#10;🔸 *بلاغ جديد*&#10;🔸 *إدارة كهرباء:الحدود الشمالية*&#10;..."></textarea>
+                </div>
+
+                <button class="btn-primary" onclick="generateFinalReport()">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    توليد التقرير النهائي
+                </button>
+            </div>
+
+            <!-- اللوحة اليسرى: المخرجات -->
+            <div class="panel">
+                <div class="stats-container" id="statsContainer">
+                    <div class="stat-card red">
+                        <div class="stat-title">الانقطاعات المؤثرة</div>
+                        <div class="stat-value red" id="statRed">0</div>
+                    </div>
+                    <div class="stat-card green">
+                        <div class="stat-title">الانقطاعات غير المؤثرة</div>
+                        <div class="stat-value green" id="statGreen">0</div>
+                    </div>
+                </div>
+
+                <div class="output-wrapper">
+                    <label>
+                        <span class="dot green"></span>
+                        التقرير الجاهز للنسخ:
+                    </label>
+                    <textarea id="finalOutput" readonly placeholder="سيظهر التقرير النهائي المنسق هنا..."
+                        spellcheck="false"></textarea>
+
+                    <div class="controls">
+                        <span style="font-size: 0.9rem; color: var(--text-muted);" id="summaryText"></span>
+                        <button class="btn-secondary" onclick="copyToClipboard()">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3">
+                                </path>
+                            </svg>
+                            نسخ التقرير
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        تم النسخ بنجاح!
+    </div>
+
+    <script>
+        // إعداد التاريخ الافتراضي لليوم
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+        });
+
+        const getDayName = (dateStr) => {
+            const d = new Date(dateStr);
+            const days = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+            return days[d.getDay()];
+        };
+
+        const formatDateToSaudi = (dateStr) => {
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        };
+
+        const timeToMinutes = (t) => {
+            if (!t) return 0;
+            const parts = t.replace(/[^\d:]/g, '').split(':');
+            if (parts.length < 2) return 0;
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        };
+
+        const diffMinutes = (start, end) => {
+            let s = timeToMinutes(start);
+            let e = timeToMinutes(end);
+            if (e < s) e += 24 * 60; // إذا تجاوز منتصف الليل
+            return e - s;
+        };
+
+        const formatDuration = (mins) => {
+            if (mins <= 0) return '0 دقيقة';
+            if (mins < 60) return `${mins} دقيقة`;
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            if (m === 0) return `${h} ساعة`;
+            return `${h} ساعة و ${m} دقيقة`;
+        };
+
+        const extractField = (text, regex, defaultVal = '') => {
+            const match = text.match(regex);
+            return match ? match[1].trim() : defaultVal;
+        };
+
+        function generateFinalReport() {
+            const rawText = document.getElementById('reportInput').value;
+            const mwVal = document.getElementById('mwInput').value || '0';
+            const dateVal = document.getElementById('dateInput').value;
+
+            if (!rawText.trim()) {
+                alert("الرجاء لصق نصوص البلاغات أولاً!");
+                return;
+            }
+
+            // تقسيم البلاغات (كل بلاغ يبدأ بـ 🔸 *بلاغ جديد* أو مشابه)
+            const reportsRaw = rawText.split(/🔸\s*\*?بلاغ جديد\*?/).filter(t => t.trim().length > 20);
+
+            const redOutages = [];
+            const greenOutages = [];
+            let totalAffectedGlobal = 0;
+            let totalRestoredUnder5 = 0;
+
+            reportsRaw.forEach((text) => {
+                // استخراج المعلومات الأساسية
+                const station = extractField(text, /محطة رقم:\s*([^\n*]+)/) || extractField(text, /المحطة الرئيسية:\s*([^\n*]+)/) || 'غير محدد';
+                const feeder = extractField(text, /مغذي رقم:\s*([^\n*]+)/) || extractField(text, /القاطع:\s*([^\n*]+)/) || 'غير محدد';
+                const outageTime = extractField(text, /وقت الانقطاع:\s*(\d{1,2}:\d{2})/);
+
+                // عدد المتأثرين
+                let affected = parseInt(extractField(text, /عدد المتأثرين:\s*(\d+)/) || extractField(text, /عدد المشتركين المتأثرين:\s*(\d+)/));
+                if (isNaN(affected)) affected = 0;
+
+                // المشتركون الحساسون
+                const sensitiveRawText = extractField(text, /المشتركين الحساسين المتأثرين:\s*\n*([\s\S]*?)(?=\n*🔸)/);
+                let sensitiveCount = 0;
+                let hasSensitive = false;
+
+                if (sensitiveRawText && !sensitiveRawText.includes('لايوجد') && !sensitiveRawText.includes('لا يوجد') && sensitiveRawText.trim() !== '') {
+                    hasSensitive = true;
+                    // البحث عن أي رقم داخل النص ليكون عدد المشتركين الحساسين
+                    const numMatch = sensitiveRawText.match(/\d+/);
+                    if (numMatch) sensitiveCount = parseInt(numMatch[0]);
+                    else sensitiveCount = 1; // الافتراضي إذا لم يُذكر رقم
+                }
+
+                // ملاحظات أخرى (سبب الانقطاع)
+                let reason = extractField(text, /ملاحظات أخرى\s*:\s*([\s\S]*?)(?:🔸|$)/);
+                reason = reason.replace(/(\n|\r)/g, ' ').trim() || 'عطل عابر'; // ترتيب النص
+                // تنظيف بعض الكلمات الزائدة
+                if (reason.includes('نهاية طرفية') && reason.length < 15) reason = 'عطل عابر';
+
+                // تحليل مراحل الإعادة
+                const phasesText = extractField(text, /مراحل الإعادة:\s*([\s\S]*?)(?:🔸|\(انتهى|\)$|$)/);
+                let phases = [];
+
+                if (phasesText) {
+                    const lines = phasesText.split('\n');
+                    for (let line of lines) {
+                        const timeMatch = line.match(/الساعة:\s*-?\s*(\d{1,2}:\d{2})/);
+                        if (timeMatch) {
+                            let time = timeMatch[1];
+                            let count = 0;
+                            const countMatch = line.match(/لعدد\s*\(?(\d+)\)?/);
+                            if (countMatch) {
+                                count = parseInt(countMatch[1]);
+                            } else if (line.includes('جميع')) {
+                                count = -1; // علامة لحساب المتبقي لاحقاً
+                            }
+                            phases.push({ time, count });
+                        }
+                    }
+
+                    // حساب "لجميع المشتركين"
+                    let currentSum = 0;
+                    phases.forEach(p => { if (p.count !== -1) currentSum += p.count; });
+                    phases.forEach(p => {
+                        if (p.count === -1) p.count = Math.max(0, affected - currentSum);
+                    });
+                }
+
+                // احتياطي في حال فشل قراءة المراحل وكان النص يحتوي على وقت إعادة
+                if (phases.length === 0 && outageTime) {
+                    const p1 = extractField(text, /وقت اعاده اول خطوة:\s*(\d{1,2}:\d{2})/);
+                    if (p1) phases.push({ time: p1, count: affected });
+                    else phases.push({ time: outageTime, count: affected }); // حماية
+                }
+
+                const firstPhaseTime = phases[0]?.time || outageTime;
+                const lastPhaseTime = phases[phases.length - 1]?.time || outageTime;
+                const durationMins = diffMinutes(outageTime, lastPhaseTime);
+
+                // الشروط الأساسية
+                const isEffective = (affected > 499) || hasSensitive;
+
+                // حساب العائدين في أقل من 5 دقائق
+                let restoredUnder5 = 0;
+                phases.forEach(p => {
+                    if (diffMinutes(outageTime, p.time) <= 5) {
+                        restoredUnder5 += p.count;
+                    }
+                });
+
+                // تجميع البيانات
+                const reportData = {
+                    station, feeder, outageTime, affected,
+                    sensitiveCount, hasSensitive, reason,
+                    firstPhaseTime, lastPhaseTime, durationMins, restoredUnder5
+                };
+
+                totalAffectedGlobal += affected;
+                totalRestoredUnder5 += restoredUnder5;
+
+                if (isEffective) {
+                    redOutages.push(reportData);
+                } else {
+                    greenOutages.push(reportData);
+                }
+            });
+
+            // حساب النسبة
+            let ratio = (totalAffectedGlobal > 0) ? ((totalRestoredUnder5 / totalAffectedGlobal) * 100).toFixed(2) : 0;
+
+            // بناء النص النهائي
+            const dayName = getDayName(dateVal);
+            const dateStr = formatDateToSaudi(dateVal);
+
+            let finalString = `*السلام عليكم ورحمة الله وبركاته*
+
+*🔸يوم:${dayName}*
+*🔸التاريخ:${dateStr}*
+*🔸مركز التحكم: الحدود الشمالية*
+🔶* أقصى حمل: ${mwVal} MW*
+
+*🔸عدد المشتركين المتأثرين : ${totalAffectedGlobal}*
+*🔸 اعادة اقل من 5 دقايق : ${totalRestoredUnder5}*
+*🔸 نسبة الاعادة لأقل من 5 دقايق: ${ratio}%*
+
+🔴 *الانقطاعات المؤثرة=${redOutages.length}*
+🟢 *الانقطاعات الغير مؤثرة=${greenOutages.length}*
+
+==========================
+
+🔴 *الانقطاعات المؤثرة=*
+`;
+
+            if (redOutages.length === 0) finalString += `\nلا يوجد انقطاعات مؤثرة\n`;
+
+            redOutages.forEach((r, idx) => {
+                const normalCount = Math.max(0, r.affected - r.sensitiveCount);
+                finalString += `
+*🔹الانقطاع # ${idx + 1}*
+*🔸المحطة الرئيسية: ${r.station}*
+*🔸القاطع: ${r.feeder}*
+*🔸وقت الانقطاع: ${r.outageTime}*
+*🔸وقت اعاده اول خطوة: ${r.firstPhaseTime}*
+*🔸 وقت اعادة آخر خطوة : ${r.lastPhaseTime}*
+*🔸سبب الانقطاع: ${r.reason}*
+*🔸مدة الانقطاع: ${formatDuration(r.durationMins)}*
+*🔸عدد المشتركين العاديين: ${normalCount}*
+*🔸عدد المشتركين الحساسين: ${r.sensitiveCount}*
+`;
+            });
+
+            finalString += `\n•••••••••••••••••••••••••••••••••••••\n\n🟢 *الانقطاعات غير المؤثرة=*\n`;
+
+            if (greenOutages.length === 0) finalString += `\nلا يوجد انقطاعات غير مؤثرة\n`;
+
+            greenOutages.forEach((r, idx) => {
+                finalString += `
+✅*الانقطاع#${idx + 1}*
+🔸وقت الانقطاع:${r.outageTime}
+🔸مدة الانقطاع: ${formatDuration(r.durationMins)}
+🔸عدد المشتركين المتأثرين:${r.affected} 
+🔸وقت اعاده اول خطوة:${r.firstPhaseTime}
+🔸 وقت اعادة آخر خطوة :${r.lastPhaseTime}
+🔸سبب الانقطاع:${r.reason}
+`;
+            });
+
+            // تحديث واجهة المستخدم
+            document.getElementById('finalOutput').value = finalString;
+            document.getElementById('statRed').innerText = redOutages.length;
+            document.getElementById('statGreen').innerText = greenOutages.length;
+            document.getElementById('statsContainer').style.display = 'grid';
+            document.getElementById('summaryText').innerText = `تم تحليل ${reportsRaw.length} بلاغات بنجاح!`;
+
+            // انيميشن خفيف
+            const ta = document.getElementById('finalOutput');
+            ta.style.borderColor = 'var(--ineffective)';
+            setTimeout(() => ta.style.borderColor = 'var(--border)', 1000);
+        }
+
+        function copyToClipboard() {
+            const output = document.getElementById('finalOutput');
+            if (!output.value) return;
+
+            output.select();
+            output.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(output.value).then(() => {
+                const toast = document.getElementById('toast');
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            });
+        }
+    </script>
+</body>
+
+</html>
